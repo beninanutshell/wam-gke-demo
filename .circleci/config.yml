@@ -18,7 +18,7 @@ jobs:
             echo ${GCP_AUTH} > /home/circleci/gcp-key.json
             gcloud auth activate-service-account --key-file /home/circleci/gcp-key.json
             gcloud --quiet config set project ${GCP_PROJECT}
-            gcloud config set compute/zone ${GCP_ZONE}
+            gcloud config set compute/region ${GCP_REGION}
             gcloud --quiet container clusters get-credentials ${GCP_KUBE_CLUSTER}
       - run:
           name: Push docker image
