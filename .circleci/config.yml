@@ -38,8 +38,51 @@ jobs:
             envsubst < myapp-template.yaml > myapp.yaml
             kubectl apply -f myapp.yaml
 
+  delete-stale-ci-stacks:
+    docker:
+      - image: google/cloud-sdk
+    working_directory: /home/circleci/myapp
+    steps:
+      - checkout
+      - run:
+        name: Authenticate with GCP
+        command: |
+          echo ${GCP_AUTH} > /home/circleci/gcp-key.json
+          gcloud auth activate-service-account --key-file /home/circleci/gcp-key.json
+          gcloud --quiet config set project ${GCP_PROJECT}
+          gcloud config set compute/zone ${GCP_ZONE}
+          gcloud --quiet container clusters get-credentials ${GCP_KUBE_CLUSTER}
+      - run:
+        name: Delete stale instances
+        command: |
+          KUBE_FEATURE_BRANCHES=`kubectl get po -n myapp -l 'app.kubernetes.io/name=myapp' -o jsonpath="{.items[*].metadata.labels['app\.kubernetes\.io/instance']}"`
+          GIT_BRANCHES=`git branch --list --remote | sed 's/  origin\///g'`
+          for kube_branch in $KUBE_FEATURE_BRANCHES; do
+            echo "Checking branch ${kube_branch}"
+            git_branch_still_exists=false
+            for git_branch in $GIT_BRANCHES; do
+              if [ "${git_branch}" == "${kube_branch}" ]; then
+                git_branch_still_exists=true
+                echo "Git branch ${git_branch} still exists, instance ${kube_branch} will not be deleted."
+              fi
+            done
+            if [ "${git_branch_still_exists}" = false ]; then
+              echo "Git branch corresponding to instance ${kube_branch} has been deleted, deleting instance..."
+              kubectl delete all,ingressroute -n myapp -l app.kubernetes.io/instance=$kube_branch
+            fi
+          done
 workflows:
   version: 2
   build-test-and-deploy:
     jobs:
       - build
+  delete-stale-deployments:
+    triggers:
+      - schedule:
+        cron: "0 0,6,12,18 * * *" # Every six hours
+        filters:
+          branches:
+            only:
+              - master
+    jobs:
+          - delete-stale-ci-stacks
