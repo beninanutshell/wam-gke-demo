@@ -92,4 +92,3 @@ spec:
 #          - backend:
 #              serviceName: myapp-${INSTANCE_NAME}
 #              servicePort: 80
-#---
