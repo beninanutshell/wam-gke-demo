@@ -156,7 +156,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "80"
 	}
 
 	log.Print("Hello from Cloud Run! The container started successfully and is listening for HTTP requests on $PORT")
