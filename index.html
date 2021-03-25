@@ -136,7 +136,7 @@
 
 		@media (prefers-color-scheme: dark) {
 			body {
-				background: black url('/assets/cloudy-bg.svg');
+				background: black url('/assets/dark_bg.svg');
 				color: white;
 			}
 		}
@@ -156,7 +156,7 @@
 
 			<div class="message">
 				<h1>It's running!</h1>
-				<div class="congrats">Congratulations, you successfully deployed a container image to GKE !</div>
+				<div class="congrats">Congratulations, you successfully deployed a container image to GKE</div>
 			</div>
 		</div>
 
@@ -167,20 +167,20 @@
 				{{if .Region}} in <code>{{.Region}}</code>{{end}}
 				{{if .Project}} in the GCP project <code>{{.Project}}</code>{{end}}.
 				{{ else }}
-				This container <strong>does not</strong> seem to be running
-				on Cloud Run.
+				This unicorn is <strong>pretty</strong> cool!
 				{{ end }}
 			</p>
 
+			<p class="callout">
+				Check the <strong>SSL certificates</strong> in the <strong>URi</strong> and check also the <strong>DNS
+					name</strong>
+			</p>
 
 			<h3>What's next?</h3>
 			<p class="next">Follow the Quickstart tutorial to build a “Hello World” application in your favorite
 				language into
 				a container image, and then deploy it to Cloud Run.</p>
 			<p class="cta">
-				<a class="primary" href="https://cloud.google.com/run/docs/quickstarts/build-and-deploy" target="_blank"
-					rel="noopener">
-					BUILD AND DEPLOY QUICKSTART</a>
 				{{ if and .Project (and .Region .Service) }}
 				<a href="https://console.cloud.google.com/run/detail/{{.Region}}/{{.Service}}/metrics?project={{.Project}}"
 					target="_blank" rel="noopener">
